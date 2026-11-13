@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<title>農業の統計ポータル（試作版）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --page:#eef3f7; --surface:#fbfdfe; --ink:#13243a; --ink2:#46566a; --muted:#6f7f91;
+  --grid:#dde5ec; --base:#c3cdd8; --ring:rgba(19,36,58,.12);
+  --hero:#13243a; --hero-ink:#eef3f7; --hero-ink2:#b7c4d3; --gold:#e2a42c;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --on-fill:#ffffff;
+  --serif:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",Meiryo,system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    color-scheme:dark;
+    --page:#0c1623; --surface:#132235; --ink:#eaf0f6; --ink2:#b8c4d2; --muted:#8c9bad;
+    --grid:#22344a; --base:#33465c; --ring:rgba(255,255,255,.12);
+    --hero:#0a1320; --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--sans);line-height:1.8;font-size:16px;-webkit-text-size-adjust:100%}
+a{color:inherit}
+a:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:4px}
+
+/* ---- 上部のバーと導入部 ---- */
+.top{background:var(--hero);color:var(--hero-ink)}
+.bar{max-width:1120px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.mark{font-family:var(--serif);font-weight:800;font-size:18px;letter-spacing:.04em}
+.mark small{font-family:var(--sans);font-weight:500;font-size:12px;color:var(--hero-ink2);margin-left:8px;border:1px solid var(--hero-ink2);border-radius:99px;padding:0 9px}
+.bar nav{display:flex;gap:18px;font-size:14px;flex-wrap:wrap}
+.bar nav a{text-decoration:none;color:var(--hero-ink2);padding:4px 0;border-bottom:2px solid transparent}
+.bar nav a:hover{color:var(--hero-ink);border-bottom-color:var(--gold)}
+.hero{position:relative;overflow:hidden}
+.hero svg.land{position:absolute;left:0;right:0;bottom:0;width:100%;height:46%;min-height:200px;display:block}
+.heroin{position:relative;max-width:1120px;margin:0 auto;padding:44px 20px 96px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:36px;align-items:start}
+.hero h1{font-family:var(--serif);font-weight:800;font-size:clamp(32px,5.2vw,58px);line-height:1.25;margin:0 0 16px;letter-spacing:.02em}
+.hero .say{font-size:clamp(16px,2vw,19px);color:var(--hero-ink);margin:0 0 10px;max-width:30em}
+.hero .say b{font-weight:700;background:linear-gradient(transparent 62%,rgba(226,164,44,.55) 62%)}
+.hero .sub{font-size:13px;color:var(--hero-ink2);margin:0;max-width:34em}
+.panel{background:var(--surface);color:var(--ink);border-radius:14px;padding:18px 20px 16px;box-shadow:0 1px 0 var(--ring);border:1px solid var(--ring)}
+.panel h2{font-family:var(--sans);font-size:15px;font-weight:700;margin:0 0 2px}
+.panel .cap{font-size:12px;color:var(--ink2);margin:0 0 10px}
+
+/* ---- 中央に基準線のある棒（増減） ---- */
+.dv{position:relative}
+.dvrow{margin:10px 0 14px}
+.dvhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px}
+.dvhead b{font-size:15px}
+.dvval{font-weight:700;font-size:20px;letter-spacing:.01em}
+.dvtrack{position:relative;height:26px;margin-top:4px}
+.dvzero{position:absolute;top:-4px;bottom:-4px;width:1px;background:var(--base)}
+.dvbar{position:absolute;top:2px;height:22px;cursor:default}
+.dvbar.neg{background:var(--s2);border-radius:4px 0 0 4px}
+.dvbar.pos{background:var(--s1);border-radius:0 4px 4px 0}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* ---- 各分野 ---- */
+.sec{max-width:1120px;margin:0 auto;padding:64px 20px 8px;display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:40px;scroll-margin-top:8px}
+.side svg{width:132px;height:132px;display:block;margin-bottom:12px}
+.side h2{font-family:var(--serif);font-weight:800;font-size:28px;line-height:1.35;margin:0 0 8px}
+.side p{margin:0;font-size:14px;color:var(--ink2);max-width:19em}
+.figs{display:flex;flex-direction:column}
+.fig{padding:22px 0 24px;border-top:2px solid var(--ink)}
+.fig + .fig{border-top:1px solid var(--grid);padding-top:22px}
+.fig h3{font-size:15px;font-weight:700;margin:0;color:var(--ink2)}
+.num{font-size:clamp(34px,5vw,46px);font-weight:700;line-height:1.25;margin:2px 0 0;letter-spacing:.005em}
+.chg{font-size:15px;font-weight:700;margin:2px 0 6px;display:flex;gap:7px;align-items:baseline}
+.chg .ar{font-size:12px}
+.chg.dn .ar{color:var(--s2)} .chg.up .ar{color:var(--s1)}
+.exp{font-size:14px;color:var(--ink2);margin:0 0 8px;max-width:34em}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;font-size:13px;margin:10px 0 0;color:var(--ink2)}
+.facts dt{color:var(--muted)} .facts dd{margin:0}
+.vl{display:inline-block;font-size:12px;font-weight:700;border-radius:4px;padding:0 8px;margin-right:6px;background:var(--ink);color:var(--surface)}
+.vl.soft{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.prev{margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--gold);font-size:13px;color:var(--ink2);background:color-mix(in srgb,var(--gold) 9%,transparent)}
+.src{margin-top:12px;font-size:13px;display:flex;flex-direction:column;gap:2px}
+.src a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--gold)}
+.src a:hover{text-decoration-thickness:2px}
+
+/* ---- 部分に分ける棒（田と畑） ---- */
+.seg{display:flex;gap:2px;margin:12px 0 6px;height:28px}
+.seg>div{border-radius:4px;display:flex;align-items:center;padding:0 9px;color:var(--on-fill);font-size:12px;font-weight:700;white-space:nowrap;overflow:visible;cursor:default}
+/* ---- 横棒（金額） ---- */
+.hb{margin:12px 0 4px}
+.hbrow{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;margin:10px 0}
+.hbname{font-size:13px;color:var(--ink2);display:flex;justify-content:space-between;gap:8px}
+.hbtrack{display:flex;align-items:center;gap:10px}
+.hbbar{height:22px;border-radius:0 4px 4px 0;cursor:default;flex:none}
+.hbval{font-size:15px;font-weight:700;white-space:nowrap}
+details.tbl{margin-top:12px;font-size:13px}
+details.tbl summary{cursor:pointer;color:var(--ink2);width:max-content}
+details.tbl table{border-collapse:collapse;margin-top:8px;width:100%;font-variant-numeric:tabular-nums}
+details.tbl th,details.tbl td{text-align:left;padding:5px 10px 5px 0;border-bottom:1px solid var(--grid);font-weight:400}
+details.tbl th{color:var(--muted);font-size:12px}
+
+/* ---- これから耕す項目 ---- */
+.plots{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.plot{border:2px dashed var(--base);border-radius:6px;padding:14px 14px 12px;background:repeating-linear-gradient(135deg,transparent 0 9px,color-mix(in srgb,var(--base) 38%,transparent) 9px 10px)}
+.plot b{display:block;font-size:14px;line-height:1.5}
+.plot span{font-size:12px;color:var(--ink2)}
+
+footer{max-width:1120px;margin:48px auto 0;padding:24px 20px 48px;border-top:1px solid var(--grid);font-size:12px;color:var(--ink2)}
+footer p{margin:0 0 6px;max-width:48em}
+.err{max-width:1120px;margin:14px auto 0;padding:0 20px}
+.err div{background:#fde8e8;color:#8a1c1c;border-radius:8px;padding:10px 14px;font-size:13px}
+#tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--surface);border-radius:8px;padding:7px 10px;font-size:12px;line-height:1.5;max-width:260px;display:none}
+#tip b{display:block;font-size:15px}
+@media (max-width:860px){
+  .heroin{grid-template-columns:minmax(0,1fr);padding-bottom:84px;gap:24px}
+  .sec{grid-template-columns:minmax(0,1fr);gap:8px;padding-top:48px}
+  .side{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
+  .side svg{width:84px;height:84px;margin:0;grid-row:span 2}
+  .side h2{font-size:24px;margin:0}
+  .side p{grid-column:2}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="bar">
+    <div class="mark">農業の統計ポータル<small>試作版</small></div>
+    <nav aria-label="項目へ移動">
+      <a href="#ninaite">農業をしている人</a><a href="#tochi">農地の広さ</a><a href="#kasegi">農業で生まれた金額</a><a href="#yotei">追加の予定</a>
+    </nav>
+  </div>
+  <div class="hero">
+    <svg class="land" id="land" viewBox="0 0 1200 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
+    <div class="heroin">
+      <div>
+        <h1>数字で見る、<br>日本の農業</h1>
+        <p class="say" id="say"></p>
+        <p class="sub" id="band"></p>
+      </div>
+      <div class="panel" id="heropanel"></div>
+    </div>
+  </div>
+</div>
+
+<div class="err" id="err"></div>
+<main id="main"></main>
+
+<footer>
+  <p>掲載の数字は、公表された時点の値を写したものです。あとから改訂されることがあります。利用や判断の前に、必ず出典のページで確認してください。</p>
+  <p>出典はすべて、国（農林水産省）が公表している統計です。</p>
+</footer>
+<div id="tip" role="status"></div>
+
+<script id="embedded" type="application/json">/*EMBED_START*/{"title": "農業の統計ポータル（試作版）", "checked_at": "2026-11-13", "note": "この試作版の数字は、公式ページで確認して手で写したものです。自動更新は準備中です。", "sections": [{"id": "ninaite", "name": "農業をしている人", "lead": "農業経営体（農業を営む個人や団体）の数と規模です。"}, {"id": "tochi", "name": "農地の広さ", "lead": "全国の耕地面積です。"}, {"id": "kasegi", "name": "農業で生まれた金額", "lead": "農業の産出額と所得です。"}], "items": [{"id": "keiei_total", "section": "ninaite", "title": "農業経営体の数", "value": "83万6千経営体", "change": "5年前より 24万経営体 減（22.3%減）", "basis": "2025年2月1日現在", "version_label": "確定値", "version_note": "2025年農林業センサス（5年に1度の調査）", "published": "2026年3月31日 公表", "source_name": "農林水産省「2025年農林業センサス結果の概要（確定値）」", "source_url": "https://www.maff.go.jp/j/press/tokei/census/260331.html", "history": [{"label": "概数値", "value": "82万8千経営体", "published": "2025年11月28日 公表", "note": "確定値で数字が変わりました"}], "chart": {"pct": -22.3, "pct_label": "22.3%減", "period": "5年前との比較"}}, {"id": "keiei_houjin", "section": "ninaite", "title": "法人経営体の数", "value": "3万4千経営体", "change": "5年前より 3千経営体 増（10.1%増）", "basis": "2025年2月1日現在", "version_label": "確定値", "version_note": "2025年農林業センサス（5年に1度の調査）", "published": "2026年3月31日 公表", "explain": "農業経営体のうち、法人化しているものの数です。", "source_name": "農林水産省「2025年農林業センサス結果の概要（確定値）」", "source_url": "https://www.maff.go.jp/j/press/tokei/census/260331.html", "history": [{"label": "概数値", "value": "3万3千経営体（5年前より2千経営体増、7.9%増）", "published": "2025年11月28日 公表", "note": "確定値で数字が変わりました"}], "chart": {"pct": 10.1, "pct_label": "10.1%増", "period": "5年前との比較"}}, {"id": "keiei_menseki", "section": "ninaite", "title": "1経営体あたりの経営耕地面積", "value": "3.6ha", "change": "5年前より 0.5ha 増", "basis": "2025年2月1日現在", "version_label": "確定値", "version_note": "2025年農林業センサス（5年に1度の調査）", "published": "2026年3月31日 公表", "source_name": "農林水産省「2025年農林業センサス結果の概要（確定値）」", "source_url": "https://www.maff.go.jp/j/press/tokei/census/260331.html", "history": [{"label": "概数値", "value": "3.7ha（5年前より0.6ha増）", "published": "2025年11月28日 公表", "note": "確定値で数字が変わりました"}]}, {"id": "kouchi", "section": "tochi", "title": "耕地面積（全国）", "value": "423万9,000ha", "change": "前年より 3万3,000ha 減（0.8%減）", "detail": "田 230万ha（前年より1万9,000ha減、0.8%減）／畑 193万9,000ha（前年より1万3,000ha減、0.7%減）", "basis": "令和7年（2025年）7月15日現在", "version_label": "令和7年の結果", "version_note": "耕地面積調査", "published": "出典ページの更新日：2025年10月28日（公表日の記載はありません）", "explain": "田と畑を合わせた、農地の面積です。", "source_name": "農林水産省「令和7年耕地面積」", "source_url": "https://www.maff.go.jp/j/tokei/kekka_gaiyou/sakumotu/menseki/r7/kouti.html", "chart": {"parts": [{"name": "田", "num": 230, "label": "230万ha", "change": "前年より1万9,000ha減（0.8%減）"}, {"name": "畑", "num": 193.9, "label": "193万9,000ha", "change": "前年より1万3,000ha減（0.7%減）"}]}}, {"id": "sansyutu", "section": "kasegi", "title": "農業総産出額（令和6年）", "value": "10兆7,801億円", "change": "前年より 13.6%増", "basis": "令和6年（2024年）", "version_label": "白書の掲載値", "version_note": "第1報（2025年12月23日公表）か確報（2026年3月25日公表）かは、この出典に記載がありません", "published": "農林水産省 令和7年度の白書（PDF）に掲載", "source_name": "農林水産省 令和7年度の白書（PDF）。出典は「令和6年生産農業所得統計」", "source_url": "https://www.maff.go.jp/j/wpaper/w_maff/r7/pdf/1-2-01.pdf", "source2_name": "農林水産省「農業産出額及び生産農業所得（全国）」", "source2_url": "https://www.maff.go.jp/j/tokei/kouhyou/nougyou_sansyutu/index.html", "chart": {"num": 107801, "pct_label": "13.6%増"}}, {"id": "shotoku", "section": "kasegi", "title": "生産農業所得（令和6年）", "value": "3兆9,649億円", "change": "前年より 20.5%増", "basis": "令和6年（2024年）", "version_label": "白書の掲載値", "version_note": "第1報（2025年12月23日公表）か確報（2026年3月25日公表）かは、この出典に記載がありません", "published": "農林水産省 令和7年度の白書（PDF）に掲載", "source_name": "農林水産省 令和7年度の白書（PDF）。出典は「令和6年生産農業所得統計」", "source_url": "https://www.maff.go.jp/j/wpaper/w_maff/r7/pdf/1-2-01.pdf", "source2_name": "農林水産省「農業産出額及び生産農業所得（全国）」", "source2_url": "https://www.maff.go.jp/j/tokei/kouhyou/nougyou_sansyutu/index.html", "chart": {"num": 39649, "pct_label": "20.5%増"}}], "planned": [{"title": "個人経営体と団体経営体の数（確定値）", "reason": "確定値の数字を、まだ確認できていません"}, {"title": "基幹的農業従事者の数", "reason": "出典の数字を、まだ確認できていません"}, {"title": "農産物と農業資材の価格の動き", "reason": "取得元を、確認中です"}, {"title": "都道府県別の数字", "reason": "e-Stat から自動で取る仕組みを作ったあとに、追加します"}]}/*EMBED_END*/</script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl=u=>/^https?:\/\//i.test(u||"")?u:null;
+
+/* ---------- データの読み込み ---------- */
+async function load(){
+  try{
+    const r=await fetch("data.json",{cache:"no-store"});
+    if(!r.ok)throw new Error("http "+r.status);
+    return {data:await r.json(),fallback:false};
+  }catch(e){
+    try{
+      const t=$("embedded").textContent.replace(/^\/\*EMBED_START\*\//,"").replace(/\/\*EMBED_END\*\/$/,"");
+      const d=JSON.parse(t);
+      if(d&&Array.isArray(d.items)&&d.items.length)return {data:d,fallback:true};
+    }catch(e2){}
+    return null;
+  }
+}
+
+/* ---------- 上部の田畑の絵（毎回同じ形になるよう、決まった式で描く） ---------- */
+function drawLand(){
+  const W=1200,H=260,HZ=150,cols=22,ys=[150,160,174,194,222,260];
+  const pal=["#2f6f93","#2a5d80","#d8a63a","#c6932c","#3e7d69","#356b5a","#8f7440","#4a8aa8"];
+  let o=`<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#13243a"/><stop offset="1" stop-color="#27486b"/></linearGradient></defs>`;
+  o+=`<rect width="${W}" height="${HZ+2}" fill="url(#sky)"/>`;
+  o+=`<circle cx="930" cy="104" r="78" fill="#e2a42c" opacity=".16"/><circle cx="930" cy="104" r="50" fill="#e2a42c"/>`;
+  o+=`<path d="M0 150 L90 98 L170 128 L270 70 L380 132 L470 104 L560 150 Z" fill="#1c3858"/>`;
+  o+=`<path d="M380 150 L520 96 L610 126 L720 84 L830 134 L930 112 L1040 142 L1120 108 L1200 132 L1200 150 Z" fill="#234468"/>`;
+  const xb=i=>(i/cols)*W*1.5-W*0.25, xt=i=>600+(xb(i)-600)*0.30;
+  const X=(i,y)=>xt(i)+(xb(i)-xt(i))*((y-HZ)/(H-HZ));
+  for(let r=0;r<ys.length-1;r++){
+    for(let c=0;c<cols;c++){
+      const h=((c*7+r*13+(c*r)%5)*2654435761)>>>0, k=h%pal.length;
+      const p=[[X(c,ys[r]),ys[r]],[X(c+1,ys[r]),ys[r]],[X(c+1,ys[r+1]),ys[r+1]],[X(c,ys[r+1]),ys[r+1]]];
+      o+=`<polygon points="${p.map(q=>q[0].toFixed(1)+","+q[1]).join(" ")}" fill="${pal[k]}" stroke="#13243a" stroke-width="1.6" stroke-linejoin="round"/>`;
+    }
+  }
+  $("land").innerHTML=o;
+}
+
+/* ---------- 各分野の絵 ---------- */
+const ART={
+ninaite:`<svg viewBox="0 0 120 120" role="img" aria-label="笠をかぶって鍬を持つ人の絵"><circle cx="60" cy="60" r="56" fill="#e8eef4"/><path d="M26 56 Q60 22 94 56 Z" fill="#e2a42c"/><path d="M26 56 Q60 62 94 56" stroke="#b9801a" stroke-width="2" fill="none"/><circle cx="60" cy="66" r="11" fill="#e8c8a4"/><path d="M38 112 Q40 80 60 78 Q80 80 82 112 Z" fill="#2a5d80"/><path d="M84 40 L98 108" stroke="#8f7440" stroke-width="4" stroke-linecap="round"/><path d="M80 38 L98 36 L96 46 Z" fill="#6f7f91"/><path d="M52 90 L84 78" stroke="#e8c8a4" stroke-width="6" stroke-linecap="round"/></svg>`,
+tochi:`<svg viewBox="0 0 120 120" role="img" aria-label="畝の並ぶ田畑の絵"><circle cx="60" cy="60" r="56" fill="#e8eef4"/><path d="M14 74 L60 40 L106 74 L60 100 Z" fill="#3e7d69"/><path d="M26 74 L60 52 M38 82 L72 56 M50 90 L84 64 M62 96 L94 74" stroke="#d8a63a" stroke-width="3.5" stroke-linecap="round"/><path d="M60 40 L60 24" stroke="#8f7440" stroke-width="3" stroke-linecap="round"/><path d="M60 26 Q70 20 76 26 Q68 32 60 26Z" fill="#2f6f93"/></svg>`,
+kasegi:`<svg viewBox="0 0 120 120" role="img" aria-label="硬貨の上に若い芽が出ている絵"><circle cx="60" cy="60" r="56" fill="#e8eef4"/><ellipse cx="60" cy="96" rx="30" ry="8" fill="#b9801a"/><rect x="30" y="84" width="60" height="12" fill="#e2a42c"/><ellipse cx="60" cy="84" rx="30" ry="8" fill="#f0bd4a"/><ellipse cx="60" cy="72" rx="26" ry="7" fill="#b9801a"/><rect x="34" y="62" width="52" height="10" fill="#e2a42c"/><ellipse cx="60" cy="62" rx="26" ry="7" fill="#f0bd4a"/><path d="M60 62 L60 34" stroke="#3e7d69" stroke-width="4" stroke-linecap="round"/><path d="M60 44 Q38 40 34 24 Q56 24 60 44Z" fill="#3e7d69"/><path d="M60 38 Q80 36 88 18 Q64 18 60 38Z" fill="#4a8aa8"/></svg>`
+};
+
+/* ---------- 吹き出し（棒に重ねたとき・キーボードで選んだとき） ---------- */
+const tip=$("tip");
+function bindTip(el,name,val,sub){
+  const show=(x,y)=>{
+    tip.textContent="";
+    const b=document.createElement("b");b.textContent=val;
+    const n=document.createElement("span");n.textContent=name;
+    tip.appendChild(b);tip.appendChild(n);
+    if(sub){const s=document.createElement("div");s.textContent=sub;tip.appendChild(s);}
+    tip.style.display="block";
+    const w=tip.offsetWidth,h=tip.offsetHeight;
+    tip.style.left=Math.max(8,Math.min(innerWidth-w-8,x-w/2))+"px";
+    tip.style.top=Math.max(8,y-h-14)+"px";
+  };
+  el.setAttribute("tabindex","0");
+  el.setAttribute("role","img");
+  el.setAttribute("aria-label",name+"　"+val+(sub?"　"+sub:""));
+  el.addEventListener("pointermove",e=>show(e.clientX,e.clientY));
+  el.addEventListener("pointerleave",()=>tip.style.display="none");
+  el.addEventListener("focus",()=>{const r=el.getBoundingClientRect();show(r.left+r.width/2,r.top)});
+  el.addEventListener("blur",()=>tip.style.display="none");
+}
+
+/* ---------- 部品 ---------- */
+function facts(d){
+  return `<dl class="facts"><dt>調査の基準</dt><dd>${esc(d.basis)}</dd><dt>版</dt><dd><span class="vl${d.version_label==="確定値"?"":" soft"}">${esc(d.version_label)}</span>${esc(d.version_note||"")}</dd><dt>公表</dt><dd>${esc(d.published)}</dd></dl>`;
+}
+function srcLinks(d){
+  const u=safeUrl(d.source_url),u2=safeUrl(d.source2_url);
+  return `<div class="src">${u?`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">出典：${esc(d.source_name)}</a>`:'<span>出典URL：情報なし</span>'}${u2?`<a href="${esc(u2)}" target="_blank" rel="noopener noreferrer">関連：${esc(d.source2_name||"出典のページ")}</a>`:""}</div>`;
+}
+function hist(d){
+  return (d.history||[]).map(h=>`<div class="prev"><b>以前の版（${esc(h.label)}）</b>：${esc(h.value)}。${esc(h.published)}。${esc(h.note||"")}</div>`).join("");
+}
+function chgLine(text){
+  const dn=/減/.test(text),up=/増/.test(text);
+  return `<div class="chg ${dn?"dn":up?"up":""}"><span class="ar" aria-hidden="true">${dn?"▼":up?"▲":""}</span><span>${esc(text)}</span></div>`;
+}
+function table(head,rows){
+  return `<details class="tbl"><summary>表で見る</summary><table><thead><tr>${head.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></details>`;
+}
+
+/* ---------- 増減の棒（上の大きな図） ---------- */
+function heroChart(items){
+  const rows=items.filter(i=>i.chart&&typeof i.chart.pct==="number");
+  if(!rows.length)return "";
+  const lo=-30,hi=15,rng=hi-lo,zero=(0-lo)/rng*100;
+  const body=rows.map(i=>{
+    const p=i.chart.pct,w=Math.abs(p)/rng*100;
+    const sty=p<0?`left:${zero-w}%;width:${w}%`:`left:${zero}%;width:${w}%`;
+    return `<div class="dvrow"><div class="dvhead"><b>${esc(i.title)}</b><span class="dvval">${p<0?"▼":"▲"} ${esc(i.chart.pct_label)}</span></div><div class="dvtrack"><span class="dvzero" style="left:${zero}%"></span><div class="dvbar ${p<0?"neg":"pos"}" data-id="${esc(i.id)}" style="${sty}"></div></div></div>`;
+  }).join("");
+  const head=`<h2>5年前と比べた増減</h2><p class="cap">2025年農林業センサス（確定値）。棒の長さは、増減の割合です。</p>`;
+  const lg=`<div class="legend"><span><i style="background:var(--s2)"></i>減った</span><span><i style="background:var(--s1)"></i>増えた</span></div>`;
+  const tb=table(["項目","増減","今回の数字"],rows.map(i=>[i.title,i.chart.pct_label,i.value]));
+  return head+`<div class="dv">${body}</div>`+lg+tb;
+}
+
+/* ---------- 田と畑の割合の棒 ---------- */
+function segChart(d){
+  const parts=d.chart.parts;
+  const cols=["var(--s1)","var(--s3)"];
+  const bar=`<div class="seg" role="group" aria-label="耕地面積の内訳">${parts.map((p,i)=>`<div data-i="${i}" style="flex:${p.num} 1 0;background:${cols[i]}">${esc(p.name)}　${esc(p.label)}</div>`).join("")}</div>`;
+  const lg=`<div class="legend">${parts.map((p,i)=>`<span><i style="background:${cols[i]}"></i>${esc(p.name)}</span>`).join("")}</div>`;
+  const tb=table(["区分","面積","前年との比較"],parts.map(p=>[p.name,p.label,p.change]));
+  return {html:bar+lg+tb,parts};
+}
+
+/* ---------- 金額の横棒 ---------- */
+function moneyChart(its){
+  const rows=its.filter(i=>i.chart&&typeof i.chart.num==="number");
+  const mx=Math.max(...rows.map(r=>r.chart.num));
+  const cols=["var(--s1)","var(--s3)"];
+  const b=rows.map((r,i)=>`<div class="hbrow"><div class="hbname"><span>${esc(r.title)}</span></div><div class="hbtrack"><div class="hbbar" data-id="${esc(r.id)}" style="width:calc((100% - 150px)*${(r.chart.num/mx).toFixed(4)});background:${cols[i%2]}"></div><span class="hbval">${esc(r.value)}</span></div></div>`).join("");
+  const lg=`<div class="legend">${rows.map((r,i)=>`<span><i style="background:${cols[i%2]}"></i>${esc(r.title)}</span>`).join("")}</div>`;
+  const tb=table(["項目","金額","前年との比較"],rows.map(r=>[r.title,r.value,r.change]));
+  return `<div class="hb">${b}</div>`+lg+tb;
+}
+
+/* ---------- 1つの数字 ---------- */
+function figure(d,extra){
+  return `<article class="fig"><h3>${esc(d.title)}</h3><div class="num">${esc(d.value)}</div>${chgLine(d.change)}${d.detail&&!extra?`<p class="exp">${esc(d.detail)}</p>`:""}${d.explain?`<p class="exp">${esc(d.explain)}</p>`:""}${extra||""}${facts(d)}${hist(d)}${srcLinks(d)}</article>`;
+}
+
+function render(d,fallback){
+  drawLand();
+  $("band").textContent="データ確認日："+(d.checked_at||"情報なし")+"。"+(d.note||"");
+  if(fallback)$("err").innerHTML='<div>data.json を読み込めなかったため、画面に埋め込まれた控えのデータを表示しています。最新でない可能性があります。</div>';
+  const items=d.items||[];
+  const tot=items.find(i=>i.id==="keiei_total"),hou=items.find(i=>i.id==="keiei_houjin");
+  if(tot&&hou&&tot.chart&&hou.chart){
+    const a=Math.abs(tot.chart.pct),b=Math.abs(hou.chart.pct);
+    $("say").innerHTML=`農業経営体は、5年で<b>${a}%</b>減りました。法人経営体は、<b>${b}%</b>増えています。`;
+  }
+  $("heropanel").innerHTML=heroChart(items);
+  let h="";
+  (d.sections||[]).forEach(s=>{
+    const its=items.filter(i=>i.section===s.id);
+    if(!its.length)return;
+    let figs="";
+    if(s.id==="tochi"){
+      figs=its.map(i=>{const sc=i.chart&&i.chart.parts?segChart(i):null;return figure(i,sc?sc.html:"")}).join("");
+    }else if(s.id==="kasegi"){
+      figs=`<article class="fig"><h3>令和6年（2024年）の金額</h3>${moneyChart(its)}</article>`+its.map(i=>figure(i)).join("");
+    }else{
+      figs=its.map(i=>figure(i)).join("");
+    }
+    h+=`<section class="sec" id="${esc(s.id)}"><div class="side">${ART[s.id]||""}<h2>${esc(s.name)}</h2><p>${esc(s.lead||"")}</p></div><div class="figs">${figs}</div></section>`;
+  });
+  if((d.planned||[]).length){
+    h+=`<section class="sec" id="yotei"><div class="side"><h2>これから載せる項目</h2><p>出典の数字を確認できたものから、順に載せます。</p></div><div class="figs"><div class="plots">${d.planned.map(p=>`<div class="plot"><b>${esc(p.title)}</b><span>${esc(p.reason)}</span></div>`).join("")}</div></div></section>`;
+  }
+  $("main").innerHTML=h;
+  document.querySelectorAll(".dvbar").forEach(el=>{const i=items.find(x=>x.id===el.dataset.id);if(i)bindTip(el,i.title,i.chart.pct_label,i.value+"（"+i.version_label+"）")});
+  document.querySelectorAll(".hbbar").forEach(el=>{const i=items.find(x=>x.id===el.dataset.id);if(i)bindTip(el,i.title,i.value,i.change)});
+  const kc=items.find(i=>i.chart&&i.chart.parts);
+  if(kc)document.querySelectorAll(".seg>div").forEach(el=>{const p=kc.chart.parts[+el.dataset.i];bindTip(el,p.name,p.label,p.change)});
+}
+
+load().then(r=>{
+  if(!r){drawLand();$("err").innerHTML='<div>データを読み込めませんでした。管理者にお知らせください。</div>';return;}
+  render(r.data,r.fallback);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+{
+ "title": "農業の統計ポータル（試作版）",
+ "checked_at": "2026-11-13",
+ "note": "この試作版の数字は、公式ページで確認して手で写したものです。自動更新は準備中です。",
+ "sections": [
+  {
+   "id": "ninaite",
+   "name": "農業をしている人",
+   "lead": "農業経営体（農業を営む個人や団体）の数と規模です。"
+  },
+  {
+   "id": "tochi",
+   "name": "農地の広さ",
+   "lead": "全国の耕地面積です。"
+  },
+  {
+   "id": "kasegi",
+   "name": "農業で生まれた金額",
+   "lead": "農業の産出額と所得です。"
+  }
+ ],
+ "items": [
+  {
+   "id": "keiei_total",
+   "section": "ninaite",
+   "title": "農業経営体の数",
+   "value": "83万6千経営体",
+   "change": "5年前より 24万経営体 減（22.3%減）",
+   "basis": "2025年2月1日現在",
+   "version_label": "確定値",
+   "version_note": "2025年農林業センサス（5年に1度の調査）",
+   "published": "2026年3月31日 公表",
+   "source_name": "農林水産省「2025年農林業センサス結果の概要（確定値）」",
+   "source_url": "https://www.maff.go.jp/j/press/tokei/census/260331.html",
+   "history": [
+    {
+     "label": "概数値",
+     "value": "82万8千経営体",
+     "published": "2025年11月28日 公表",
+     "note": "確定値で数字が変わりました"
+    }
+   ],
+   "chart": {
+    "pct": -22.3,
+    "pct_label": "22.3%減",
+    "period": "5年前との比較"
+   }
+  },
+  {
+   "id": "keiei_houjin",
+   "section": "ninaite",
+   "title": "法人経営体の数",
+   "value": "3万4千経営体",
+   "change": "5年前より 3千経営体 増（10.1%増）",
+   "basis": "2025年2月1日現在",
+   "version_label": "確定値",
+   "version_note": "2025年農林業センサス（5年に1度の調査）",
+   "published": "2026年3月31日 公表",
+   "explain": "農業経営体のうち、法人化しているものの数です。",
+   "source_name": "農林水産省「2025年農林業センサス結果の概要（確定値）」",
+   "source_url": "https://www.maff.go.jp/j/press/tokei/census/260331.html",
+   "history": [
+    {
+     "label": "概数値",
+     "value": "3万3千経営体（5年前より2千経営体増、7.9%増）",
+     "published": "2025年11月28日 公表",
+     "note": "確定値で数字が変わりました"
+    }
+   ],
+   "chart": {
+    "pct": 10.1,
+    "pct_label": "10.1%増",
+    "period": "5年前との比較"
+   }
+  },
+  {
+   "id": "keiei_menseki",
+   "section": "ninaite",
+   "title": "1経営体あたりの経営耕地面積",
+   "value": "3.6ha",
+   "change": "5年前より 0.5ha 増",
+   "basis": "2025年2月1日現在",
+   "version_label": "確定値",
+   "version_note": "2025年農林業センサス（5年に1度の調査）",
+   "published": "2026年3月31日 公表",
+   "source_name": "農林水産省「2025年農林業センサス結果の概要（確定値）」",
+   "source_url": "https://www.maff.go.jp/j/press/tokei/census/260331.html",
+   "history": [
+    {
+     "label": "概数値",
+     "value": "3.7ha（5年前より0.6ha増）",
+     "published": "2025年11月28日 公表",
+     "note": "確定値で数字が変わりました"
+    }
+   ]
+  },
+  {
+   "id": "kouchi",
+   "section": "tochi",
+   "title": "耕地面積（全国）",
+   "value": "423万9,000ha",
+   "change": "前年より 3万3,000ha 減（0.8%減）",
+   "detail": "田 230万ha（前年より1万9,000ha減、0.8%減）／畑 193万9,000ha（前年より1万3,000ha減、0.7%減）",
+   "basis": "令和7年（2025年）7月15日現在",
+   "version_label": "令和7年の結果",
+   "version_note": "耕地面積調査",
+   "published": "出典ページの更新日：2025年10月28日（公表日の記載はありません）",
+   "explain": "田と畑を合わせた、農地の面積です。",
+   "source_name": "農林水産省「令和7年耕地面積」",
+   "source_url": "https://www.maff.go.jp/j/tokei/kekka_gaiyou/sakumotu/menseki/r7/kouti.html",
+   "chart": {
+    "parts": [
+     {
+      "name": "田",
+      "num": 230,
+      "label": "230万ha",
+      "change": "前年より1万9,000ha減（0.8%減）"
+     },
+     {
+      "name": "畑",
+      "num": 193.9,
+      "label": "193万9,000ha",
+      "change": "前年より1万3,000ha減（0.7%減）"
+     }
+    ]
+   }
+  },
+  {
+   "id": "sansyutu",
+   "section": "kasegi",
+   "title": "農業総産出額（令和6年）",
+   "value": "10兆7,801億円",
+   "change": "前年より 13.6%増",
+   "basis": "令和6年（2024年）",
+   "version_label": "白書の掲載値",
+   "version_note": "第1報（2025年12月23日公表）か確報（2026年3月25日公表）かは、この出典に記載がありません",
+   "published": "農林水産省 令和7年度の白書（PDF）に掲載",
+   "source_name": "農林水産省 令和7年度の白書（PDF）。出典は「令和6年生産農業所得統計」",
+   "source_url": "https://www.maff.go.jp/j/wpaper/w_maff/r7/pdf/1-2-01.pdf",
+   "source2_name": "農林水産省「農業産出額及び生産農業所得（全国）」",
+   "source2_url": "https://www.maff.go.jp/j/tokei/kouhyou/nougyou_sansyutu/index.html",
+   "chart": {
+    "num": 107801,
+    "pct_label": "13.6%増"
+   }
+  },
+  {
+   "id": "shotoku",
+   "section": "kasegi",
+   "title": "生産農業所得（令和6年）",
+   "value": "3兆9,649億円",
+   "change": "前年より 20.5%増",
+   "basis": "令和6年（2024年）",
+   "version_label": "白書の掲載値",
+   "version_note": "第1報（2025年12月23日公表）か確報（2026年3月25日公表）かは、この出典に記載がありません",
+   "published": "農林水産省 令和7年度の白書（PDF）に掲載",
+   "source_name": "農林水産省 令和7年度の白書（PDF）。出典は「令和6年生産農業所得統計」",
+   "source_url": "https://www.maff.go.jp/j/wpaper/w_maff/r7/pdf/1-2-01.pdf",
+   "source2_name": "農林水産省「農業産出額及び生産農業所得（全国）」",
+   "source2_url": "https://www.maff.go.jp/j/tokei/kouhyou/nougyou_sansyutu/index.html",
+   "chart": {
+    "num": 39649,
+    "pct_label": "20.5%増"
+   }
+  }
+ ],
+ "planned": [
+  {
+   "title": "個人経営体と団体経営体の数（確定値）",
+   "reason": "確定値の数字を、まだ確認できていません"
+  },
+  {
+   "title": "基幹的農業従事者の数",
+   "reason": "出典の数字を、まだ確認できていません"
+  },
+  {
+   "title": "農産物と農業資材の価格の動き",
+   "reason": "取得元を、確認中です"
+  },
+  {
+   "title": "都道府県別の数字",
+   "reason": "e-Stat から自動で取る仕組みを作ったあとに、追加します"
+  }
+ ]
+}
