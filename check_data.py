@@ -93,6 +93,8 @@ for it in data["items"]:
             err("%s: %s がありません" % (iid, k))
     if not str(it.get("source_url", "")).startswith("https://"):
         err("%s: source_url が https:// で始まっていません" % iid)
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(it.get("checked", ""))):
+        err("%s: checked(最終確認日)がないか、形が違います" % iid)
     pub = it.get("published")
     if pub is not None and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", pub):
         err("%s: published の形が違います: %r" % (iid, pub))
