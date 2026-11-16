@@ -1,0 +1,61 @@
+name: 更新画面からの反映
+
+# 更新画面(update.html)から送られた Issue(題名が「[統計更新]」で始まるもの)を、data.json に反映します。
+# Issue を作った人が、このリポジトリの持ち主(または、権限のある人)のときだけ動きます。ほかの人が作った Issue は、無視します。
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: apply-update
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: startsWith(github.event.issue.title, '[統計更新]') && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 内容を確かめて、data.json に反映する
+        id: apply
+        continue-on-error: true
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: python apply_update.py
+      - name: 反映できたときは、保存する(サイトは保存をきっかけに自動で更新されます)
+        if: steps.apply.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json index.html
+          if git diff --cached --quiet; then
+            echo "変更なし"
+          else
+            git commit -m "更新画面からの更新: #${ISSUE_NUMBER}"
+            git pull --rebase -X theirs origin main
+            git push
+          fi
+      - name: 結果を、Issue にコメントして閉じる
+        if: always()
+        run: |
+          if [ ! -f update_result.md ]; then
+            echo "❌ 処理を完了できませんでした。GitHub の「Actions」で、この実行の記録を確認してください。" > update_result.md
+          fi
+          gh issue comment "$ISSUE_NUMBER" --body-file update_result.md
+          if [ "${{ steps.apply.outcome }}" = "success" ]; then
+            gh issue close "$ISSUE_NUMBER" --reason completed
+          else
+            gh issue close "$ISSUE_NUMBER" --reason "not planned"
+          fi
