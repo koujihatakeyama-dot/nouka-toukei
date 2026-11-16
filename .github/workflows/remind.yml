@@ -1,0 +1,40 @@
+name: 更新時期のお知らせ
+
+# 毎月1日の朝9時(日本時間)に、更新の時期が来た数字があれば、Issue を作って、メールで知らせます。
+
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      OWNER: ${{ github.repository_owner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: お知らせの文章を作る
+        run: python remind.py > remind.md
+      - name: 文章があれば、Issue にして知らせる
+        run: |
+          if [ -s remind.md ]; then
+            TITLE="[更新時期] $(TZ=Asia/Tokyo date '+%Y年%-m月')"
+            if gh issue list --state open --search "$TITLE in:title" --json number --jq 'length' | grep -qv '^0$'; then
+              echo "同じお知らせが、すでにあります"
+            else
+              { echo "@${OWNER}"; echo; cat remind.md; } > remind_body.md
+              gh issue create --title "$TITLE" --body-file remind_body.md
+            fi
+          else
+            echo "今月は、お知らせする数字はありません"
+          fi
