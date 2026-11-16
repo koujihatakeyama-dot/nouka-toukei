@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>数字の更新画面</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+:root{--page:#eef3f7;--surface:#fbfdfe;--surface2:#f2f6fa;--ink:#13243a;--ink2:#4a5b72;--line:#d9e2ec;--gold:#e2a42c;--navy:#17304f;--navy-ink:#f3f7fb;--s1:#2a78d6;--s2:#c9501f;--ok:#1b7f5a;--ng:#b3261e;--warn:#8a5f00;--shadow:0 1px 2px rgba(19,36,58,.06),0 4px 14px rgba(19,36,58,.05)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0c1623;--surface:#132235;--surface2:#183049;--ink:#eaf0f6;--ink2:#a9b8cb;--line:#25405c;--navy:#0a1220;--navy-ink:#eaf0f6;--s1:#5b9cf0;--s2:#f08350;--ok:#4cc79a;--ng:#ff8a80;--warn:#e0b04a;--shadow:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;line-height:1.75;font-size:15px}
+a{color:var(--s1)}
+header.top{background:var(--navy);color:var(--navy-ink);border-bottom:3px solid var(--gold)}
+.top .in{max-width:860px;margin:0 auto;padding:14px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.top h1{font-size:19px;margin:0}
+.top a{color:var(--gold);margin-left:auto;font-size:13px}
+main{max-width:860px;margin:0 auto;padding:18px 20px 60px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card h2{font-size:16px;margin:0 0 4px;display:flex;gap:10px;align-items:center}
+.card h2 .n{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--navy);color:var(--navy-ink);align-items:center;justify-content:center;font-size:13px;flex:none}
+.card p.h{margin:2px 0 12px;color:var(--ink2);font-size:13.5px}
+label{display:block;font-weight:500;font-size:13.5px;margin:14px 0 4px}
+label small{font-weight:400;color:var(--ink2);margin-left:6px}
+input[type=text],input[type=date],input[type=url],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--s1);outline-offset:1px}
+.row{display:flex;gap:10px;align-items:center}
+.row .unit{white-space:nowrap;color:var(--ink2);font-weight:500}
+.radios{display:flex;flex-wrap:wrap;gap:8px}
+.radios label{display:flex;gap:6px;align-items:center;margin:0;padding:8px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-weight:400;background:var(--surface)}
+.radios input:checked + span{font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:10px;border:0;font:inherit;font-weight:700;font-size:15px;cursor:pointer;background:var(--navy);color:var(--navy-ink);text-decoration:none}
+.btn:hover{filter:brightness(1.12)}
+.btn.gold{background:var(--gold);color:#2a1d00}
+.btn.ghost{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+.btn[disabled],.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed;pointer-events:none}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.now{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:13.5px;background:var(--surface2);border-radius:8px;padding:12px 14px}
+.now b{color:var(--ink2);font-weight:500;margin-right:6px}
+.now .big{grid-column:1/-1;font-size:22px;font-weight:700}
+.now .big small{font-size:13px;font-weight:500;color:var(--ink2);margin-left:4px}
+.tag{display:inline-block;font-size:11.5px;padding:1px 9px;border-radius:99px;border:1px solid var(--line);color:var(--ink2);background:var(--surface2)}
+.tag.auto{border-color:var(--s1);color:var(--s1)}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13.5px}
+.checks li{display:flex;gap:8px;align-items:flex-start}
+.checks .m{flex:none;width:20px;text-align:center;font-weight:700}
+.checks .ok .m{color:var(--ok)}.checks .ng .m{color:var(--ng)}.checks .na .m{color:var(--ink2)}
+.checks .ng{color:var(--ng)}
+.sub{border-top:1px dashed var(--line);margin-top:14px;padding-top:6px}
+.hint{font-size:12.5px;color:var(--ink2);margin-top:4px}
+.preview{border:1px dashed var(--line);border-radius:10px;padding:12px 14px;margin-top:10px;background:var(--surface2)}
+.preview .v{font-size:26px;font-weight:700}
+.preview .v small{font-size:13px;color:var(--ink2);font-weight:500;margin-left:4px}
+.preview .d.up{color:var(--s1)}.preview .d.down{color:var(--s2)}
+.note{font-size:13px;color:var(--warn)}
+details.help{margin-top:10px;font-size:13.5px}
+details.help summary{cursor:pointer;color:var(--s1)}
+details.help ol{margin:8px 0 0;padding-left:22px}
+.done{display:none;border-left:4px solid var(--ok)}
+.err{color:var(--ng);font-weight:500}
+@media (max-width:600px){.now{grid-template-columns:1fr}.card{padding:16px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in"><h1>数字の更新画面</h1><a href="index.html">サイトに戻る</a></div></header>
+<main>
+<div id="loading" class="card">読み込み中です…</div>
+<div id="app" hidden>
+
+<section class="card">
+  <h2><span class="n">1</span>どの数字を更新しますか</h2>
+  <p class="h">一覧から選んでください。「最終確認」が古い数字から、順に見ていくと分かりやすいです。</p>
+  <select id="item" aria-label="更新する数字"></select>
+  <div id="now" class="now" style="margin-top:12px"></div>
+  <p class="hint" id="src"></p>
+</section>
+
+<section class="card">
+  <h2><span class="n">2</span>変わっていないときは</h2>
+  <p class="h">出典のページを見て、新しい公表がなく、数字がそのままだったときは、次のボタンを押します。「最終確認」の日付だけが、今日になります。</p>
+  <div class="btns"><a class="btn ghost" id="confirmBtn" href="#" target="_blank" rel="noopener">変わりなし(確認しました)</a></div>
+</section>
+
+<section class="card" id="formCard">
+  <h2><span class="n">3</span>新しい数字に入れ替えるとき</h2>
+  <p class="h">出典のページを開いて、新しい数字が書かれている文をコピーし、下に貼ります。入力した数字が、貼った文の中に書かれているかは、画面が自動で確かめます。</p>
+  <div class="btns" style="margin-top:0"><a class="btn ghost" id="openSrc" href="#" target="_blank" rel="noopener">出典のページを開く</a></div>
+
+  <label for="quote">原文<small>出典のページから、数字が書かれている文を、そのままコピーして貼ってください</small></label>
+  <textarea id="quote" placeholder="例: 飼養頭数は128万6,000頭で、前年に比べ7,000頭(0.5%)減少した。"></textarea>
+  <div class="hint">漢数字(「128万6,000」など)は、原文のままで大丈夫です。</div>
+
+  <label for="value">新しい数字<small>数字だけを、アラビア数字で入力します(単位は不要です)</small></label>
+  <div class="row"><input type="text" id="value" inputmode="decimal" autocomplete="off" placeholder="例: 1,286,000"><span class="unit" id="unit"></span></div>
+  <div class="hint" id="valueHint"></div>
+
+  <label>増減の向き</label>
+  <div class="radios" id="dir">
+    <label><input type="radio" name="dir" value="up"><span>▲ 増えた・上がった</span></label>
+    <label><input type="radio" name="dir" value="down"><span>▼ 減った・下がった</span></label>
+    <label><input type="radio" name="dir" value="flat"><span>― 変わらず</span></label>
+    <label><input type="radio" name="dir" value="none"><span>増減は載せない</span></label>
+  </div>
+  <div id="deltaBox">
+    <label for="delta">増減の文<small>画面に出る短い文です。数字はアラビア数字で書きます</small></label>
+    <input type="text" id="delta" autocomplete="off">
+    <div class="hint" id="deltaHint"></div>
+  </div>
+
+  <div id="bdBox"></div>
+
+  <label for="basis">対象の時期</label>
+  <input type="text" id="basis" autocomplete="off">
+  <div class="hint" id="basisHint"></div>
+
+  <label for="version">版<small>確定値・速報・予想(見込み)・公表値 など</small></label>
+  <input type="text" id="version" list="versions" autocomplete="off">
+  <datalist id="versions"><option value="確定値"><option value="概数値"><option value="速報"><option value="予想(見込み)"><option value="推定値"><option value="公表値"></datalist>
+
+  <label for="pub">公表日</label>
+  <input type="date" id="pub">
+  <label style="display:flex;gap:8px;align-items:center;font-weight:400;margin-top:6px"><input type="checkbox" id="pubNone"> 出典に、公表日が書かれていない</label>
+
+  <label for="srcName">出典の名前</label>
+  <input type="text" id="srcName" autocomplete="off">
+  <label for="srcUrl">出典のアドレス<small>https:// から始まるもの</small></label>
+  <input type="url" id="srcUrl" autocomplete="off">
+
+  <label for="vnote">この数字についての注意<small>あれば入力します。なければ、空のままにします</small></label>
+  <textarea id="vnote" style="min-height:64px"></textarea>
+
+  <label style="display:flex;gap:8px;align-items:center;font-weight:400" id="histBox"><input type="checkbox" id="hist"> 以前の数字を、「以前の版」として残す(確定値で数字が変わったときなど)</label>
+
+  <div class="sub">
+    <h3 style="font-size:14px;margin:10px 0 6px">画面の確認</h3>
+    <ul class="checks" id="checks"></ul>
+    <div class="preview" id="preview"></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2><span class="n">4</span>送る</h2>
+  <p class="h">ボタンを押すと、GitHub の画面が新しいタブで開きます。開いたら、中身は変えずに、緑の「Submit new issue」ボタンを押してください。1~2分で、サイトに反映されます。結果は、その画面にコメントで返ってきます。</p>
+  <div class="btns">
+    <a class="btn gold" id="sendBtn" href="#" target="_blank" rel="noopener" aria-disabled="true">GitHub に送る</a>
+    <button class="btn ghost" id="copyBtn" type="button">内容をコピー</button>
+  </div>
+  <p class="hint" id="sendHint"></p>
+  <div class="card done" id="done" style="margin:14px 0 0"></div>
+  <details class="help">
+    <summary>うまく開かないとき</summary>
+    <ol>
+      <li>「内容をコピー」を押します。</li>
+      <li>GitHub の、この統計サイトのリポジトリを開き、「Issues」→「New issue」を押します。</li>
+      <li>題名の欄には、コピーした内容の1行目(「[統計更新]」から始まる行)を貼ります。本文の欄には、コピーした内容の全体を貼ります。</li>
+      <li>「Submit new issue」を押します。</li>
+    </ol>
+  </details>
+</section>
+
+<section class="card">
+  <h2>そのほかの操作</h2>
+  <p class="h">自動更新の数字(「自動更新」の印が付いたもの)は、毎週月曜の朝9時に確認しています。今すぐ確認したいときは、次のボタンから動かせます。</p>
+  <div class="btns" style="margin-top:0">
+    <a class="btn ghost" id="runAuto" href="#" target="_blank" rel="noopener">自動更新を今すぐ動かす</a>
+    <a class="btn ghost" id="actions" href="#" target="_blank" rel="noopener">更新の結果を見る</a>
+  </div>
+  <p class="hint">「自動更新を今すぐ動かす」を押したあとは、開いた画面の右側の「Run workflow」→緑の「Run workflow」を押します。</p>
+  <details class="help"><summary>設定(GitHub のリポジトリ名)</summary>
+    <label for="repo">リポジトリ名<small>通常は変えません。例: koujihatakeyama-dot/nouka-toukei</small></label>
+    <input type="text" id="repo" autocomplete="off">
+  </details>
+</section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const UNITS={"千":1e3,"万":1e4,"億":1e8,"兆":1e12};
+const KANJI=/[〇一二三四五六七八九十百千万兆]|(?<![0-9])億/;
+const ALLOW=["一部","一般","一括","一覧","万一","九州"];
+let D=null,cur=null,lastBody="",lastTitle="";
+
+function nfkc(s){return String(s).normalize("NFKC")}
+function numbersIn(text){
+  let t=nfkc(text).replace(/(?<=[0-9])\s+(?=[万千億兆])/g,"").replace(/(?<=[万千億兆])\s+(?=[0-9])/g,"");
+  const found=[];
+  for(const run of t.matchAll(/(?:\d[\d,]*(?:\.\d+)?[万千億兆]?)+/g)){
+    let total=0;
+    for(const m of run[0].matchAll(/(\d[\d,]*(?:\.\d+)?)([万千億兆]?)/g)){
+      const v=parseFloat(m[1].replace(/,/g,""));total+=v*(UNITS[m[2]]||1);found.push(v);
+    }
+    found.push(total);
+  }
+  return found;
+}
+const has=(f,x)=>f.some(v=>Math.abs(v-x)<=1e-6*Math.max(1,Math.abs(x)));
+function kanjiLeft(s){let t=s||"";ALLOW.forEach(w=>t=t.split(w).join(""));return KANJI.test(t)}
+function deltaNums(text){
+  const t=nfkc(text),out=[];
+  for(const m of t.matchAll(/(\d[\d,]*(?:\.\d+)?)(?!\d)(?!\s*(?:年|月|日|か月|ヶ月|ケ月))/g))out.push(parseFloat(m[1].replace(/,/g,"")));
+  return out;
+}
+function parseValue(s){
+  const t=nfkc(s).replace(/\s/g,"");
+  if(!/^-?\d[\d,]*(\.\d+)?$/.test(t))return null;
+  const neg=t.startsWith("-"),body=t.replace(/^-/,"").replace(/,/g,"");
+  const [ip,fp]=body.split(".");
+  return {num:parseFloat(body),shown:(neg?"-":"")+Number(ip).toLocaleString("en-US")+(fp?"."+fp:"")};
+}
+const fmtDate=iso=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||"");return m?`${m[1]}年${+m[2]}月${+m[3]}日`:"(なし)"};
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const repo=()=>($("repo").value||D.repo||"").trim();
+function store(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
+const todayIso=()=>{const d=new Date(Date.now()+9*3600*1000);return d.toISOString().slice(0,10)};
+const daysAgo=iso=>Math.round((Date.parse(todayIso())-Date.parse(iso))/86400000);
+
+async function init(){
+  let d=null;
+  try{const r=await fetch("data.json",{cache:"no-store"});if(!r.ok)throw 0;d=await r.json()}catch(e){}
+  if(!d){$("loading").innerHTML='<span class="err">データを読み込めませんでした。ページを読み込み直してください。</span>';return}
+  D=d;$("loading").hidden=true;$("app").hidden=false;
+  $("repo").value=load("repo")||D.repo||"";
+  $("repo").addEventListener("input",()=>{store("repo",$("repo").value);links()});
+  const sel=$("item");
+  const items=[...D.items].sort((a,b)=>(a.checked||"").localeCompare(b.checked||""));
+  const byCat={};D.categories.forEach(c=>byCat[c.id]=[]);
+  items.forEach(i=>(byCat[i.cat]||(byCat[i.cat]=[])).push(i));
+  sel.innerHTML=D.categories.filter(c=>byCat[c.id].length).map(c=>`<optgroup label="${esc(c.name)}">`+byCat[c.id].map(i=>`<option value="${esc(i.id)}">${esc(i.title)}(最終確認 ${esc(fmtDate(i.checked))}${i.auto?"・自動更新":""})</option>`).join("")+`</optgroup>`).join("");
+  const q=new URLSearchParams(location.search).get("id");
+  if(q&&D.items.some(i=>i.id===q))sel.value=q;
+  sel.addEventListener("change",pick);
+  ["quote","value","delta","basis","version","pub","srcName","srcUrl","vnote","hist","pubNone"].forEach(id=>$(id).addEventListener("input",recalc));
+  document.querySelectorAll("input[name=dir]").forEach(r=>r.addEventListener("change",recalc));
+  $("pubNone").addEventListener("change",recalc);
+  $("copyBtn").addEventListener("click",copyAll);
+  $("sendBtn").addEventListener("click",()=>{if($("sendBtn").getAttribute("aria-disabled")==="true")return;$("done").style.display="block";$("done").innerHTML="<b>GitHub の画面が開きます。</b> 開いたら、緑の「Submit new issue」を押してください。1~2分したら、サイトを読み込み直して、数字が変わったか確かめてください。"});
+  pick();
+}
+function pick(){
+  cur=D.items.find(i=>i.id===$("item").value);
+  const i=cur;
+  const age=i.checked?daysAgo(i.checked):null;
+  $("now").innerHTML=`<div class="big">${esc(i.value)}<small>${esc(i.unit)}</small></div>
+   <div><b>対象の時期</b>${esc(i.basis)}</div><div><b>版</b>${esc(i.version)}</div>
+   <div><b>公表日</b>${esc(i.published?fmtDate(i.published):(i.published_note||"なし"))}</div><div><b>最終確認</b>${esc(fmtDate(i.checked))}${age!=null?`(${age}日前)`:""}</div>
+   <div style="grid-column:1/-1">${i.auto?'<span class="tag auto">自動更新</span> 毎週、自動で確認しています。手で直すのは、自動で取れなかったときだけです。':'<span class="tag">手で更新</span> 公表の回数が少ない数字です。'}</div>`;
+  $("src").innerHTML=`出典: <a href="${esc(i.source_url)}" target="_blank" rel="noopener">${esc(i.source_name)}</a>`;
+  $("openSrc").href=i.source_url;
+  $("unit").textContent=i.unit||"";
+  $("valueHint").textContent=`いまの数字: ${i.value}${i.unit||""}`;
+  $("deltaHint").textContent=i.delta?`いまの文: ${i.delta.text}`:"いまは、増減を載せていません";
+  $("basisHint").textContent=`いまの時期: ${i.basis}`+(i.auto?"(自動更新の数字は、「2026年10月」のような形で入力します)":"");
+  $("quote").value="";$("value").value="";$("delta").value="";$("pub").value="";$("pubNone").checked=false;
+  $("basis").value=i.basis;$("version").value=i.version;$("srcName").value=i.source_name;$("srcUrl").value=i.source_url;
+  $("vnote").value=i.version_note||"";$("hist").checked=false;
+  document.querySelectorAll("input[name=dir]").forEach(r=>r.checked=false);
+  const rows=i.breakdown||[];
+  $("bdBox").innerHTML=rows.length?`<div class="sub"><h3 style="font-size:14px;margin:10px 0 0">内訳</h3><p class="hint">この数字には、内訳があります。内訳も、新しい数字に直してください。</p>`+rows.map((r,k)=>`<label>${esc(r.name)}<small>いまの数字: ${esc(r.value)}</small></label><div class="row"><input type="text" id="bv${k}" inputmode="decimal" placeholder="数字だけ" autocomplete="off"><span class="unit">${esc(String(r.value).replace(/^[\d,.\-]+/,""))}</span></div><input type="text" id="bn${k}" placeholder="説明の文(いまの文: ${esc(r.note)})" style="margin-top:6px" autocomplete="off">`).join("")+`</div>`:"";
+  rows.forEach((r,k)=>{$("bv"+k).addEventListener("input",recalc);$("bn"+k).addEventListener("input",recalc)});
+  $("histBox").style.display=cur.num==null?"none":"flex";
+  $("done").style.display="none";
+  links();recalc();
+}
+function links(){
+  const r=repo();
+  $("actions").href=`https://github.com/${r}/actions`;
+  $("runAuto").href=`https://github.com/${r}/actions/workflows/update.yml`;
+  const body=bodyFor({type:"confirm",id:cur.id},"変わりなし");
+  $("confirmBtn").href=issueUrl(`[統計更新] ${cur.title}(変わりなし)`,body);
+}
+function issueUrl(title,body){
+  const base=`https://github.com/${repo()}/issues/new`;
+  const full=`${base}?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+  return full.length<=7000?full:`${base}?title=${encodeURIComponent(title)}`;
+}
+function bodyFor(payload,label){
+  return `この Issue は、統計ポータルの更新画面から作られました。中身は変えず、そのまま「Submit new issue」を押してください。\n\n対象: ${cur.title}(${label})\n\n\`\`\`json\n${JSON.stringify(payload)}\n\`\`\`\n`;
+}
+function dirVal(){const r=document.querySelector("input[name=dir]:checked");return r?r.value:null}
+function recalc(){
+  const i=cur,res=[];
+  const add=(st,msg)=>res.push({st,msg});
+  const quote=$("quote").value.trim(),qn=numbersIn(quote);
+  const pv=parseValue($("value").value);
+  const dir=dirVal();
+  const basis=$("basis").value.trim(),version=$("version").value.trim();
+  const sName=$("srcName").value.trim(),sUrl=$("srcUrl").value.trim();
+  // 原文
+  add(quote?"ok":"ng",quote?"原文が貼られています":"原文を貼ってください");
+  // 数字
+  if(!$("value").value.trim())add("ng","新しい数字を入力してください");
+  else if(!pv)add("ng","新しい数字は、数字だけで入力してください(単位や文字は不要です)");
+  else if(!quote)add("ng","原文を貼ると、数字が原文にあるか確かめます");
+  else if(has(qn,Math.abs(pv.num)*(i.qf||1)))add("ok",`数字 ${pv.shown} が、原文の中に書かれています`);
+  else add("ng",`数字 ${pv.shown} が、原文の中に見つかりません。原文を、出典のページからそのままコピーして貼ってください`);
+  // 増減
+  const dt=$("delta").value.trim();
+  $("deltaBox").style.display=dir==="none"?"none":"block";
+  if(!dir)add("ng","増減の向きを選んでください");
+  else if(dir==="none")add("na","増減は載せません");
+  else if(!dt)add("ng","増減の文を入力してください");
+  else{
+    const bad=deltaNums(dt).filter(c=>!has(qn,c));
+    if(!quote)add("ng","原文を貼ると、増減の文の数字を確かめます");
+    else if(bad.length)add("ng",`増減の文の数字 ${bad.join("、")} が、原文の中に見つかりません(計算で出した数字は、載せられません)`);
+    else add("ok","増減の文の数字が、原文の中に書かれています");
+  }
+  // 内訳
+  const rows=i.breakdown||[],bd=[];
+  rows.forEach((r,k)=>{
+    const v=parseValue($("bv"+k).value),n=$("bn"+k).value.trim();
+    if(!$("bv"+k).value.trim())add("ng",`内訳「${r.name}」の数字を入力してください`);
+    else if(!v)add("ng",`内訳「${r.name}」の数字は、数字だけで入力してください`);
+    else{
+      const x=Math.abs(v.num)*(r.qf||1),checks=[x].concat(deltaNums(n));
+      const bad=checks.filter(c=>!has(qn,c));
+      if(!quote)add("ng",`原文を貼ると、内訳「${r.name}」の数字を確かめます`);
+      else if(bad.length)add("ng",`内訳「${r.name}」の数字 ${bad.join("、")} が、原文の中に見つかりません(内訳の数字が原文に無いときは、内訳の原文も、上の原文欄に続けて貼ってください)`);
+      else add("ok",`内訳「${r.name}」の数字が、原文の中に書かれています`);
+    }
+    if(!n)add("ng",`内訳「${r.name}」の説明の文を入力してください`);
+    bd.push({value:$("bv"+k).value,note:n});
+  });
+  // 漢数字
+  const kan=[["新しい数字",$("value").value],["増減の文",dt],["対象の時期",basis],["版",version],["注意",$("vnote").value]].concat(bd.map((b,k)=>["内訳の文",b.note])).filter(x=>kanjiLeft(x[1]));
+  add(kan.length?"ng":"ok",kan.length?`「${kan[0][0]}」に漢数字が残っています。アラビア数字に直してください`:"漢数字は残っていません");
+  // 基本項目
+  if(!basis)add("ng","対象の時期を入力してください");
+  else if(i.auto&&!/\d{4}年\d{1,2}月/.test(nfkc(basis)))add("ng","自動更新の数字は、対象の時期を「2026年10月」のような形で入力してください");
+  else add("ok","対象の時期が入力されています");
+  add(version?"ok":"ng",version?"版が入力されています":"版を入力してください");
+  add(sName?"ok":"ng",sName?"出典の名前が入力されています":"出典の名前を入力してください");
+  add(/^https:\/\//.test(sUrl)?"ok":"ng",/^https:\/\//.test(sUrl)?"出典のアドレスが入力されています":"出典のアドレスは、https:// から始まる形で入力してください");
+  const pub=$("pub").value;
+  if(pub&&Date.parse(pub)>Date.parse(todayIso())+86400000)add("ng","公表日が、未来の日付になっています");
+  else add(pub||$("pubNone").checked?"ok":"ng",pub?"公表日が入力されています":($("pubNone").checked?"公表日は載せません":"公表日を入力するか、「書かれていない」にチェックしてください"));
+  $("checks").innerHTML=res.map(r=>`<li class="${r.st}"><span class="m">${r.st==="ok"?"✓":r.st==="ng"?"✗":"－"}</span><span>${esc(r.msg)}</span></li>`).join("");
+  const okAll=res.every(r=>r.st!=="ng");
+  // 見本
+  const dd=dir&&dir!=="none"&&dt?`<div class="d ${dir}">${{up:"▲",down:"▼",flat:"―"}[dir]} ${esc(dt)}</div>`:"";
+  $("preview").innerHTML=`<div class="hint" style="margin:0 0 4px">画面での見え方(見本)</div><div><b>${esc(i.title)}</b></div><div class="v">${esc(pv?pv.shown:"—")}<small>${esc(i.unit||"")}</small></div>${dd}<div class="hint">${esc(basis)}・${esc(version)}・${esc(pub?fmtDate(pub):"公表日なし")}</div>`;
+  // 送る
+  const btn=$("sendBtn");
+  if(!okAll){btn.setAttribute("aria-disabled","true");btn.removeAttribute("href");$("copyBtn").disabled=true;$("sendHint").textContent="上の「画面の確認」に、✗が残っています。直すと、ボタンが押せるようになります。";lastBody="";return}
+  const payload={type:"update",id:i.id,value:$("value").value.trim(),dir:dir,delta_text:dir==="none"?"":dt,basis,version,
+    published:pub||null,source_name:sName,source_url:sUrl,quote,version_note:$("vnote").value.trim(),keep_history:$("hist").checked,
+    breakdown:rows.length?bd:undefined};
+  if(!pub)payload.published_note="公表日は、出典に書かれていません";
+  lastTitle=`[統計更新] ${i.title}`;
+  lastBody=bodyFor(payload,"数字の入れ替え");
+  const url=issueUrl(lastTitle,lastBody);
+  btn.removeAttribute("aria-disabled");btn.href=url;$("copyBtn").disabled=false;
+  $("sendHint").textContent=url.includes("&body=")?"準備ができました。「GitHub に送る」を押してください。":"内容が長いため、題名だけが入った状態で GitHub が開きます。先に「内容をコピー」を押し、GitHub の本文の欄に貼ってから、「Submit new issue」を押してください。";
+}
+async function copyAll(){
+  if(!lastBody)return;
+  const text=lastTitle+"\n\n"+lastBody;
+  try{await navigator.clipboard.writeText(text)}catch(e){const t=document.createElement("textarea");t.value=text;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()}
+  $("copyBtn").textContent="コピーしました";setTimeout(()=>$("copyBtn").textContent="内容をコピー",2000);
+}
+init();
+</script>
+</main>
+</body>
+</html>
